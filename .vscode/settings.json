@@ -1,0 +1,26 @@
+{
+    //Uncomment the interpreter you want to use
+    "terminal.integrated.env.windows": {
+        "PATH": "C:\\RoboDK\\Python-Embedded\\;${env:PATH}"
+        //"PATH": "C:\\Users\\HP\\AppData\\Local\\Microsoft\\WindowsApps\\;${env:PATH}"
+        //"PATH": "C:\\Users\\HP\\AppData\\Local\\Programs\\Python\\Python312\\;${env:PATH}"
+        //"PATH": "C:\\RoboDK\\Python37\\;${env:PATH}"
+        //"PATH": "C:\\Users\\puigm\\AppData\\Local\\Programs\\Python\\Python312\\;${env:PATH}"
+    },
+    // Specify the default Python interpreter path
+    "python.defaultInterpreterPath": 
+        "/opt/anaconda3/bin/python3",
+        //"C:\\Users\\HP\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe",
+        //"C:\\Users\\HP\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        //"C:\\RoboDK\\Python37\\python.exe",
+        //"C:\\Users\\puigm\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+
+    // ROS extension settings
+    "ros.distro": "noetic",
+
+    // Additional common Python-related settings
+    "editor.tabSize": 4, // Set tab size to 4 spaces
+    
+    // Color theme setting
+    "workbench.colorTheme": "Visual Studio Light" // Set your preferred color theme here
+}
