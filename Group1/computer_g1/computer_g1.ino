@@ -15,11 +15,18 @@ uint8_t masterMacAddress[] = {0x0c, 0xb8, 0x15, 0xd7, 0xe1, 0x7c};
 
 // Esta es la estructura de los datos que reciviremos
 typedef struct {
-    float roll;
-    float pitch;
-    float yaw;
-    int s1Status;
-    int s2Status;
+    float g_roll;
+    float g_pitch;
+    float g_yaw;
+    int s11Status;
+    int s12Status;
+
+    float t_roll;
+    float t_pitch;
+    float t_yaw;
+    int s21Status;
+    int s22Status;
+
     float torque_yaw;
     float torque_pitch;
     float torque_roll1;
@@ -68,11 +75,16 @@ void loop() {
     switch (command)
     {
     case Command::GET_RPW:
-      Serial.println(dataFromMaster.roll,DEC);
-      Serial.println(dataFromMaster.pitch,DEC);
-      Serial.println(dataFromMaster.yaw,DEC);
-      Serial.println(dataFromMaster.s1Status,DEC);
-      Serial.println(dataFromMaster.s2Status,DEC);
+      Serial.println(dataFromMaster.t_roll,DEC);
+      Serial.println(dataFromMaster.t_pitch,DEC);
+      Serial.println(dataFromMaster.t_yaw,DEC);
+      Serial.println(dataFromMaster.g_roll,DEC);
+      Serial.println(dataFromMaster.g_pitch,DEC);
+      Serial.println(dataFromMaster.g_yaw,DEC);
+      Serial.println(dataFromMaster.s11Status,DEC);
+      Serial.println(dataFromMaster.s12Status,DEC);
+      Serial.println(dataFromMaster.s21Status,DEC);
+      Serial.println(dataFromMaster.s22Status,DEC);
       Serial.println(dataFromMaster.torque_yaw,DEC);
       Serial.println(dataFromMaster.torque_pitch,DEC);
       Serial.println(dataFromMaster.torque_roll1,DEC);

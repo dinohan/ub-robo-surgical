@@ -36,12 +36,10 @@ float *rpw;
 int s1Status = HIGH;
 int s2Status = HIGH;
 
-// Direccion MAC del ESP32 computer (reemplazar con el que habeis obtenido)
-uint8_t computerMacAddress[] = {0x7c, 0x9e, 0xbd, 0x62, 0x48, 0xec};
+uint8_t masterGripperMacAddress[] = {0x0c, 0xb8, 0x15, 0xd7, 0xe1, 0x7c};
 
 //Direccion MAC del ESP32 servos (reemplazar con el que habeis obtenido)
 uint8_t servosMacAddress[] = {0x7c, 0x9e, 0xbd, 0x66, 0x7f, 0xdc};
-uint8_t masterToolMacAddress[] = {0x7c, 0x9e, 0xbd, 0x66, 0x7e, 0x60};
 //Direccion MAC del Master que se comunica con los servos del UR5e
 //uint8_t servosMacAddress[] = {0x7c, 0x9e, 0xbd, 0x61, 0xa1, 0x34};
 
@@ -60,18 +58,11 @@ TxMessage dataToServos;
 
 // Esta es la estructura de los datos que enviaremos del master al computer
 typedef struct {
-    float g_roll;
-    float g_pitch;
-    float g_yaw;
-    int s11Status;
-    int s12Status;
-
-    float t_roll;
-    float t_pitch;
-    float t_yaw;
-    int s21Status;
-    int s22Status;
-
+    float roll;
+    float pitch;
+    float yaw;
+    int s1Status;
+    int s2Status;
     float torque_yaw;
     float torque_pitch;
     float torque_roll1;
@@ -88,11 +79,6 @@ typedef struct {
     float torque_roll1;
     float torque_roll2;
     
-    float t_roll;
-    float t_pitch;
-    float t_yaw;
-    int s21Status;
-    int s22Status;
 } RxMessage;
 // Creamos una varaible con la estructura recien creada
 RxMessage dataFromTool;
@@ -125,7 +111,7 @@ void setup()
   
   // Registramos el slave de los servos
   esp_now_peer_info_t peerInfo = {};
-  memcpy(peerInfo.peer_addr, masterToolMacAddress, 6);
+  memcpy(peerInfo.peer_addr, servosMacAddress, 6);
   peerInfo.channel = 0;  
   peerInfo.encrypt = false;
   
@@ -138,13 +124,13 @@ void setup()
   esp_now_register_recv_cb(OnDataRecv);
 
   // Registramos el slave computer
-  esp_now_peer_info_t peerInfo_computer = {};
-  memcpy(peerInfo_computer.peer_addr, computerMacAddress, 6);
-  peerInfo_computer.channel = 1;
-  peerInfo_computer.encrypt = false;
+  esp_now_peer_info_t peerInfo_master_e1 = {};
+  memcpy(peerInfo_master_e1.peer_addr, masterGripperMacAddress, 6);
+  peerInfo_master_e1.channel = 1;
+  peerInfo_master_e1.encrypt = false;
 
   //comprobamos que el slave del ordenador se ha añadido bien
-  if (esp_now_add_peer(&peerInfo_computer) != ESP_OK) {
+  if (esp_now_add_peer(&peerInfo_master_e1) != ESP_OK) {
     //Serial.println("Failed to add computer slave");
     return;
   }
@@ -207,19 +193,13 @@ void loop()
   dataToComputer.torque_pitch=dataFromTool.torque_pitch;
   dataToComputer.torque_roll1=dataFromTool.torque_roll1;
   dataToComputer.torque_roll2=dataFromTool.torque_roll2;
-  dataToComputer.t_roll=dataFromTool.t_roll;
-  dataToComputer.t_pitch=dataFromTool.t_pitch;
-  dataToComputer.t_yaw=dataFromTool.t_yaw;
-  dataToComputer.s21Status=dataFromTool.s21Status;
-  dataToComputer.s22Status=dataFromTool.s22Status;
-
   
   //Enviar los datos al computer
-  dataToComputer.g_roll=roll;
-  dataToComputer.g_pitch=pitch;
-  dataToComputer.g_yaw=fmod(yaw + zero_yaw, 360.0);//New
-  dataToComputer.s11Status=s1Status;
-  dataToComputer.s12Status=s2Status;
+  dataToComputer.roll=roll;
+  dataToComputer.pitch=pitch;
+  dataToComputer.yaw=fmod(yaw + zero_yaw, 360.0);//New
+  dataToComputer.s1Status=s1Status;
+  dataToComputer.s2Status=s2Status;
 
   Serial.print(s1Status,DEC);
   Serial.print("\t");
@@ -229,6 +209,6 @@ void loop()
   
   esp_err_t result = esp_now_send(servosMacAddress, (uint8_t *) &dataToServos, sizeof(dataToServos));
   delay(10);
-  esp_err_t result_computer = esp_now_send(computerMacAddress, (uint8_t *) &dataToComputer, sizeof(dataToComputer));
+  esp_err_t result_computer = esp_now_send(masterGripperMacAddress, (uint8_t *) &dataToComputer, sizeof(dataToComputer));
   delay(10);
 }
