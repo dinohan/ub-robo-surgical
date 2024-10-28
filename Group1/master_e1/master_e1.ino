@@ -58,18 +58,18 @@ TxMessage dataToServos;
 
 // Esta es la estructura de los datos que enviaremos del master al computer
 typedef struct {
-    float roll;
-    float pitch;
-    float yaw;
-    int s1Status;
-    int s2Status;
+    float t_roll;
+    float t_pitch;
+    float t_yaw;
+    int s21Status;
+    int s22Status;
     float torque_yaw;
     float torque_pitch;
     float torque_roll1;
     float torque_roll2;
 } Tx2Message;
 // Creamos una varaible con la estructura recien creada
-Tx2Message dataToComputer;
+Tx2Message dataToMaster;
 
 
 // Esta es la estructura de los datos que reciviremos
@@ -81,12 +81,12 @@ typedef struct {
     
 } RxMessage;
 // Creamos una varaible con la estructura recien creada
-RxMessage dataFromTool;
+RxMessage dataFromServo;
 
 // Funcion que se ejecutara cada vez que se haya recibido un mensaje
 void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
-  // Copiamos los datos recibidos a nuestra variable dataFromTool
-  memcpy(&dataFromTool, incomingData, sizeof(dataFromTool));
+  // Copiamos los datos recibidos a nuestra variable dataFromServo
+  memcpy(&dataFromServo, incomingData, sizeof(dataFromServo));
   
 }
 
@@ -180,26 +180,19 @@ void loop()
     yaw=NewValueYaw;
   }
   OldValueYaw=yaw;
- 
-  //Enviar los datos a los servomotores
-  dataToServos.roll=roll;
-  dataToServos.pitch=pitch;
-  dataToServos.yaw=fmod(yaw + zero_yaw, 360.0);//New
-  dataToServos.s1Status=s1Status;
-  dataToServos.s2Status=s2Status;
 
   //Recibir datos de servomotor y enviarlos al computer
-  dataToComputer.torque_yaw=dataFromTool.torque_yaw;
-  dataToComputer.torque_pitch=dataFromTool.torque_pitch;
-  dataToComputer.torque_roll1=dataFromTool.torque_roll1;
-  dataToComputer.torque_roll2=dataFromTool.torque_roll2;
+  dataToMaster.torque_yaw=dataFromServo.torque_yaw;
+  dataToMaster.torque_pitch=dataFromServo.torque_pitch;
+  dataToMaster.torque_roll1=dataFromServo.torque_roll1;
+  dataToMaster.torque_roll2=dataFromServo.torque_roll2;
   
   //Enviar los datos al computer
-  dataToComputer.roll=roll;
-  dataToComputer.pitch=pitch;
-  dataToComputer.yaw=fmod(yaw + zero_yaw, 360.0);//New
-  dataToComputer.s1Status=s1Status;
-  dataToComputer.s2Status=s2Status;
+  dataToMaster.t_roll=roll;
+  dataToMaster.t_pitch=pitch;
+  dataToMaster.t_pitchyaw=fmod(yaw + zero_yaw, 360.0);//New
+  dataToMaster.s21Status=s1Status;
+  dataToMaster.s22Status=s2Status;
 
   Serial.print(s1Status,DEC);
   Serial.print("\t");
@@ -207,8 +200,6 @@ void loop()
   Serial.println("\t");
   
   
-  esp_err_t result = esp_now_send(servosMacAddress, (uint8_t *) &dataToServos, sizeof(dataToServos));
-  delay(10);
-  esp_err_t result_computer = esp_now_send(masterGripperMacAddress, (uint8_t *) &dataToComputer, sizeof(dataToComputer));
+  esp_err_t result_computer = esp_now_send(masterGripperMacAddress, (uint8_t *) &dataToMaster, sizeof(dataToMaster));
   delay(10);
 }
