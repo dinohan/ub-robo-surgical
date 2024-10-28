@@ -5,6 +5,7 @@
 
 // Direccion MAC del master (reemplazar con el que habeis obtenido)
 uint8_t masterMacAddress[] = {0x0c, 0xb8, 0x15, 0xd7, 0xe1, 0x7c};
+uint8_t masterToolMacAddress[] = {0x7c, 0x9e, 0xbd, 0x66, 0x7e, 0x60};
 
 //variables de identificacion para los servos
 Servo servo_yaw;
@@ -150,7 +151,7 @@ void setup() {
 
 void loop() {
   //empezamos enviando los datos de la corriente de los servos
-  esp_err_t result = esp_now_send(masterMacAddress, (uint8_t *) &dataToMaster, sizeof(dataToMaster));
+  esp_err_t result = esp_now_send(masterToolMacAddress, (uint8_t *) &dataToMaster, sizeof(dataToMaster));
 
   //comprobamos que se han enviado bien los datos
   if (result == ESP_OK) {
