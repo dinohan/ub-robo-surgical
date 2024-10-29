@@ -67,32 +67,47 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  if (Serial.available() > 0)
-  {
-    command = (Command)Serial.read();
+  Serial.println(dataFromMaster.g_roll,DEC);
+  Serial.println(dataFromMaster.g_pitch,DEC);
+  Serial.println(dataFromMaster.g_yaw,DEC);
+  Serial.println(dataFromMaster.s11Status,DEC);
+  Serial.println(dataFromMaster.s12Status,DEC);
+  Serial.println(dataFromMaster.t_roll,DEC);
+  Serial.println(dataFromMaster.t_pitch,DEC);
+  Serial.println(dataFromMaster.t_yaw,DEC);
+  Serial.println(dataFromMaster.s21Status,DEC);
+  Serial.println(dataFromMaster.s22Status,DEC);
+  Serial.println(dataFromMaster.torque_yaw,DEC);
+  Serial.println(dataFromMaster.torque_pitch,DEC);
+  Serial.println(dataFromMaster.torque_roll1,DEC);
+  Serial.println(dataFromMaster.torque_roll2,DEC);
 
-    switch (command)
-    {
-    case Command::GET_RPW:
-      Serial.println(dataFromMaster.g_roll,DEC);
-      Serial.println(dataFromMaster.g_pitch,DEC);
-      Serial.println(dataFromMaster.g_yaw,DEC);
-      Serial.println(dataFromMaster.s11Status,DEC);
-      Serial.println(dataFromMaster.s12Status,DEC);
-      Serial.println(dataFromMaster.t_roll,DEC);
-      Serial.println(dataFromMaster.t_pitch,DEC);
-      Serial.println(dataFromMaster.t_yaw,DEC);
-      Serial.println(dataFromMaster.s21Status,DEC);
-      Serial.println(dataFromMaster.s22Status,DEC);
-      Serial.println(dataFromMaster.torque_yaw,DEC);
-      Serial.println(dataFromMaster.torque_pitch,DEC);
-      Serial.println(dataFromMaster.torque_roll1,DEC);
-      Serial.println(dataFromMaster.torque_roll2,DEC);
-      break;
+  // put your main code here, to run repeatedly:
+  // if (Serial.available() > 0)
+  // {
+  //   command = (Command)Serial.read();
+
+  //   switch (command)
+  //   {
+  //   case Command::GET_RPW:
+  //     Serial.println(dataFromMaster.g_roll,DEC);
+  //     Serial.println(dataFromMaster.g_pitch,DEC);
+  //     Serial.println(dataFromMaster.g_yaw,DEC);
+  //     Serial.println(dataFromMaster.s11Status,DEC);
+  //     Serial.println(dataFromMaster.s12Status,DEC);
+  //     Serial.println(dataFromMaster.t_roll,DEC);
+  //     Serial.println(dataFromMaster.t_pitch,DEC);
+  //     Serial.println(dataFromMaster.t_yaw,DEC);
+  //     Serial.println(dataFromMaster.s21Status,DEC);
+  //     Serial.println(dataFromMaster.s22Status,DEC);
+  //     Serial.println(dataFromMaster.torque_yaw,DEC);
+  //     Serial.println(dataFromMaster.torque_pitch,DEC);
+  //     Serial.println(dataFromMaster.torque_roll1,DEC);
+  //     Serial.println(dataFromMaster.torque_roll2,DEC);
+  //     break;
     
-    }
-  }
+  //   }
+  // }
   
 
   delay(10);
