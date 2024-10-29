@@ -75,14 +75,14 @@ void loop() {
     switch (command)
     {
     case Command::GET_RPW:
-      Serial.println(dataFromMaster.t_roll,DEC);
-      Serial.println(dataFromMaster.t_pitch,DEC);
-      Serial.println(dataFromMaster.t_yaw,DEC);
       Serial.println(dataFromMaster.g_roll,DEC);
       Serial.println(dataFromMaster.g_pitch,DEC);
       Serial.println(dataFromMaster.g_yaw,DEC);
       Serial.println(dataFromMaster.s11Status,DEC);
       Serial.println(dataFromMaster.s12Status,DEC);
+      Serial.println(dataFromMaster.t_roll,DEC);
+      Serial.println(dataFromMaster.t_pitch,DEC);
+      Serial.println(dataFromMaster.t_yaw,DEC);
       Serial.println(dataFromMaster.s21Status,DEC);
       Serial.println(dataFromMaster.s22Status,DEC);
       Serial.println(dataFromMaster.torque_yaw,DEC);

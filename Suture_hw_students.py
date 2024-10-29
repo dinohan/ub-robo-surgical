@@ -113,8 +113,10 @@ def suture(arduino, robot, gripper, needle, base, text_label):
     while True:
         # Read ESP32 computer data
         arduino.write(Command.GET_RPW.value)
-        roll, pitch, yaw = [float(arduino.readline().strip()) for _ in range(3)]
-        s1, s2 = [bool(int(arduino.readline().strip())) for _ in range(2)]
+        g_roll, g_pitch, g_yaw = [float(arduino.readline().strip()) for _ in range(3)]
+        s11, s12 = [bool(int(arduino.readline().strip())) for _ in range(2)]
+        t_roll, t_pitch, t_yaw = [float(arduino.readline().strip()) for _ in range(3)]
+        s21, s22 = [bool(int(arduino.readline().strip())) for _ in range(2)]
         torque_values = [float(arduino.readline().strip()) for _ in range(4)]
 
         endowrist_pose = robot.Pose()
@@ -122,17 +124,18 @@ def suture(arduino, robot, gripper, needle, base, text_label):
         gripper_pose = gripper.Pose()
         Xg, Yg, Zg, rg, pg, yg = Pose_2_TxyzRxyz(gripper_pose)
 
-        R, P, W = map(math.radians, [roll, pitch, yaw])
-        endowrist_pose = transl(Xr, Yr, Zr) * rotz(ZERO_YAW) * rotz(W) * roty(P) * rotx(R)
+        R, P, W = map(math.radians, [g_roll, g_pitch, g_yaw])
+        t_R, t_P, t_W = map(math.radians, [t_roll, t_pitch, t_yaw])
+        endowrist_pose = transl(Xr, Yr, Zr) * rotz(ZERO_YAW) * rotz(t_W) * roty(t_P) * rotx(t_R)
 
-        if s1 and not s2:
+        if s11 and not s12:
             needle.setParentStatic(gripper)
             update_text_label(text_label, "Close Gripper")
-        elif not s1 and not s2:
+        elif not s11 and not s12:
             gripper_pose = transl(Xg, Yg, Zg) * rotz(W) * roty(P) * rotx(R)
             gripper.setPose(gripper_pose)
-            update_text_label(text_label, f"Mode 2. Gripper orientation: R={round(roll)} P={round(pitch)} W={round(yaw)}")
-        elif not s1 and s2:
+            update_text_label(text_label, f"Mode 2. Gripper orientation: R={round(g_roll)} P={round(g_pitch)} W={round(g_yaw)}")
+        elif not s11 and s12:
             needle.setParentStatic(base)
             update_text_label(text_label, "Open Gripper")
         elif key_states['u']:
@@ -144,16 +147,16 @@ def suture(arduino, robot, gripper, needle, base, text_label):
             key_states['d'] = False  # Reset the state after moving
             update_text_label(text_label, "Endowrist moved down")
         elif key_states['e']:
-            endowrist_pose = transl(Xr,Yr,Zr) * rotz(ZERO_YAW) * rotz(W) * roty(P) * rotx(R)
+            endowrist_pose = transl(Xr,Yr,Zr) * rotz(ZERO_YAW) * rotz(t_W) * roty(t_P) * rotx(t_R)
             if robot.MoveL_Test(robot.Joints(), endowrist_pose) == 0:
                 robot.MoveL(endowrist_pose, True)
-                update_text_label(text_label, f"Mode 1. Robot orientation: R={round(roll)} P={round(pitch)} W={round(yaw)}")
+                update_text_label(text_label, f"Mode 1. Robot orientation: R={round(g_roll)} P={round(g_pitch)} W={round(g_yaw)}")
                 key_states['e'] = False  # Reset the state after moving
             else:
                 update_text_label(text_label, "Mode 1. Robot orientation: Robot cannot reach the position")
                 key_states['e'] = False  # Reset the state after moving
         else:
-            update_text_label(text_label, f"Waiting: R={round(roll)} P={round(pitch)} W={round(yaw)}")
+            update_text_label(text_label, f"Waiting: R={round(g_roll)} P={round(g_pitch)} W={round(g_yaw)}")
 
 # Main function
 def main():
