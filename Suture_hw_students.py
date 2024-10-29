@@ -126,15 +126,18 @@ def suture(arduino, robot, gripper, needle, base, text_label):
 
         R, P, W = map(math.radians, [g_roll, g_pitch, g_yaw])
         t_R, t_P, t_W = map(math.radians, [t_roll, t_pitch, t_yaw])
-        endowrist_pose = transl(Xr, Yr, Zr) * rotz(ZERO_YAW) * rotz(t_W) * roty(t_P) * rotx(t_R)
+        
+        gripper_pose = transl(Xg, Yg, Zg) * rotz(W) * roty(P) * rotx(R)
+        gripper.setPose(gripper_pose)
+
+        update_text_label(text_label, f"Mode 2. Gripper orientation: R={round(g_roll)} P={round(g_pitch)} W={round(g_yaw)}")
+        endowrist_pose = transl(Xr,Yr,Zr) * rotz(ZERO_YAW) * rotz(t_W) * roty(t_P) * rotx(t_R)
+        if robot.MoveL_Test(robot.Joints(), endowrist_pose) == 0:
+            robot.MoveL(endowrist_pose, True)
 
         if s11 and not s12:
             needle.setParentStatic(gripper)
             update_text_label(text_label, "Close Gripper")
-        elif not s11 and not s12:
-            gripper_pose = transl(Xg, Yg, Zg) * rotz(W) * roty(P) * rotx(R)
-            gripper.setPose(gripper_pose)
-            update_text_label(text_label, f"Mode 2. Gripper orientation: R={round(g_roll)} P={round(g_pitch)} W={round(g_yaw)}")
         elif not s11 and s12:
             needle.setParentStatic(base)
             update_text_label(text_label, "Open Gripper")
@@ -146,15 +149,6 @@ def suture(arduino, robot, gripper, needle, base, text_label):
             robot.MoveL(robot.Pose() * transl(0, 0, -10), True)
             key_states['d'] = False  # Reset the state after moving
             update_text_label(text_label, "Endowrist moved down")
-        elif key_states['e']:
-            endowrist_pose = transl(Xr,Yr,Zr) * rotz(ZERO_YAW) * rotz(t_W) * roty(t_P) * rotx(t_R)
-            if robot.MoveL_Test(robot.Joints(), endowrist_pose) == 0:
-                robot.MoveL(endowrist_pose, True)
-                update_text_label(text_label, f"Mode 1. Robot orientation: R={round(g_roll)} P={round(g_pitch)} W={round(g_yaw)}")
-                key_states['e'] = False  # Reset the state after moving
-            else:
-                update_text_label(text_label, "Mode 1. Robot orientation: Robot cannot reach the position")
-                key_states['e'] = False  # Reset the state after moving
         else:
             update_text_label(text_label, f"Waiting: R={round(g_roll)} P={round(g_pitch)} W={round(g_yaw)}")
 
